@@ -2,6 +2,8 @@ package it.eni.extracrypto.service;
 
 import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.entity.User;
+import it.eni.extracrypto.model.entity.UserConfig;
+import it.eni.extracrypto.repository.UserConfigRepository;
 import it.eni.extracrypto.repository.UserRepository;
 import it.eni.extracrypto.util.Utils;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -15,10 +17,12 @@ import java.util.Base64;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserConfigRepository userConfigRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserConfigRepository userConfigRepository) {
         this.userRepository = userRepository;
+        this.userConfigRepository = userConfigRepository;
     }
 
     public void createUser(CreateUserDto createUserDto){
@@ -26,8 +30,11 @@ public class UserService {
         user.setUsername(createUserDto.getUsername());
         user.setPassword(generatePassword(createUserDto.getPassword()));
 
-        userRepository.save(user);
+        User userSaved= userRepository.save(user);
 
+        UserConfig userConfig = new UserConfig();
+        userConfig.setUserId(userSaved.getId());
+        userConfigRepository.save(userConfig);
     }
 
     public User login(String auth){
@@ -57,5 +64,6 @@ public class UserService {
        return salt+ ":"+ Base64.getEncoder().encodeToString(hashedPassword);
 
     }
+
 
 }
