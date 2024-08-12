@@ -1,28 +1,37 @@
 package it.eni.extracrypto.service;
 
+import it.eni.extracrypto.exception.BusinessException;
 import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.entity.User;
 import it.eni.extracrypto.model.entity.UserConfig;
+import it.eni.extracrypto.model.entity.Wallet;
 import it.eni.extracrypto.repository.UserConfigRepository;
 import it.eni.extracrypto.repository.UserRepository;
+import it.eni.extracrypto.repository.WalletRepository;
 import it.eni.extracrypto.util.Utils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.UUID;
 
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final UserConfigRepository userConfigRepository;
+    private final WalletRepository walletRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserConfigRepository userConfigRepository) {
+    public UserService(UserRepository userRepository, UserConfigRepository userConfigRepository,
+                       WalletRepository walletRepository) {
+
         this.userRepository = userRepository;
         this.userConfigRepository = userConfigRepository;
+        this.walletRepository = walletRepository;
     }
 
     public void createUser(CreateUserDto createUserDto){
@@ -30,11 +39,29 @@ public class UserService {
         user.setUsername(createUserDto.getUsername());
         user.setPassword(generatePassword(createUserDto.getPassword()));
 
+        User userFound = userRepository.findByUsername(createUserDto.getUsername());
+
+
+        if(userFound != null){
+            throw new BusinessException(HttpStatus.BAD_REQUEST,"Nome gia' in uso");
+        }
+
         User userSaved= userRepository.save(user);
 
         UserConfig userConfig = new UserConfig();
         userConfig.setUserId(userSaved.getId());
         userConfigRepository.save(userConfig);
+
+        Wallet wallet = new Wallet();
+        wallet.setUserId(userSaved.getId());
+        wallet.setRecoveryKey(getUuid());
+        wallet.setId(getUuid());
+        walletRepository.save(wallet);
+    }
+
+    private static String getUuid(){
+        return UUID.randomUUID().toString().replace("-","")+UUID.randomUUID().toString().replace("-","");
+
     }
 
     public User login(String auth){
