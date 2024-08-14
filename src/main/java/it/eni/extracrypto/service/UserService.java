@@ -1,6 +1,7 @@
 package it.eni.extracrypto.service;
 
 import it.eni.extracrypto.exception.BusinessException;
+import it.eni.extracrypto.model.ErrorEnum;
 import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.entity.User;
 import it.eni.extracrypto.model.entity.UserConfig;
@@ -11,7 +12,6 @@ import it.eni.extracrypto.repository.WalletRepository;
 import it.eni.extracrypto.util.Utils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
@@ -43,11 +43,10 @@ public class UserService {
 
 
         if(userFound != null){
-            throw new BusinessException(HttpStatus.BAD_REQUEST,"Nome gia' in uso");
+            throw new BusinessException(ErrorEnum.NAME_ALREADY_USED);
         }
 
         User userSaved= userRepository.save(user);
-
         UserConfig userConfig = new UserConfig();
         userConfig.setUserId(userSaved.getId());
         userConfigRepository.save(userConfig);
