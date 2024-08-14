@@ -1,4 +1,4 @@
-package it.eni.extracrypto.model;
+package it.eni.extracrypto.model.enums;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

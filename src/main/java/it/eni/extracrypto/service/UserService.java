@@ -1,11 +1,11 @@
 package it.eni.extracrypto.service;
 
 import it.eni.extracrypto.exception.BusinessException;
-import it.eni.extracrypto.model.ErrorEnum;
 import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.entity.User;
 import it.eni.extracrypto.model.entity.UserConfig;
 import it.eni.extracrypto.model.entity.Wallet;
+import it.eni.extracrypto.model.enums.ErrorEnum;
 import it.eni.extracrypto.repository.UserConfigRepository;
 import it.eni.extracrypto.repository.UserRepository;
 import it.eni.extracrypto.repository.WalletRepository;
