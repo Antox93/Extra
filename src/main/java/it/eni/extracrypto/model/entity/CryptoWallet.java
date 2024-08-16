@@ -1,24 +1,29 @@
 package it.eni.extracrypto.model.entity;
 
+import it.eni.extracrypto.model.enums.CryptoName;
 import it.eni.extracrypto.model.enums.Network;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Entity
-@Table(name="user_config")
+@Table(name="crypto_wallet")
 @Data
-public class UserConfig {
+public class CryptoWallet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
-    private Long userId;
+    private CryptoName cryptoName;
 
     @Column
-    private String favouriteCrypto;
+    private BigDecimal amount;
 
     @Column
-    private Network favouriteNetwork;
+    private String walletAddress;
 
+    @Column
+    private Network network;
 }

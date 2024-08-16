@@ -10,6 +10,7 @@ import it.eni.extracrypto.repository.UserConfigRepository;
 import it.eni.extracrypto.repository.UserRepository;
 import it.eni.extracrypto.repository.WalletRepository;
 import it.eni.extracrypto.util.Utils;
+import jakarta.transaction.Transactional;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class UserService {
         this.walletRepository = walletRepository;
     }
 
+    @Transactional
     public void createUser(CreateUserDto createUserDto){
         User user=new User();
         user.setUsername(createUserDto.getUsername());

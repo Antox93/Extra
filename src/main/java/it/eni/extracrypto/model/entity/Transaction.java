@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name="transaction")
@@ -26,7 +26,7 @@ public class Transaction {
     private Network network;
 
     @Column
-    private Timestamp tTimestamp;
+    private LocalDateTime tTimestamp;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -34,4 +34,7 @@ public class Transaction {
 
     @Column
     private BigDecimal amount;
+
+    @Column
+    private BigDecimal fee;
 }
