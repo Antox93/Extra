@@ -19,6 +19,7 @@ public class UserConfig {
     private String favouriteCrypto;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Network favouriteNetwork;
 
 }

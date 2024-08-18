@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.UUID;
 
 
 @Service
@@ -55,14 +54,9 @@ public class UserService {
 
         Wallet wallet = new Wallet();
         wallet.setUserId(userSaved.getId());
-        wallet.setRecoveryKey(getUuid());
-        wallet.setId(getUuid());
+        wallet.setRecoveryKey(Utils.getLongUuid());
+        wallet.setId(Utils.getLongUuid());
         walletRepository.save(wallet);
-    }
-
-    private static String getUuid(){
-        return UUID.randomUUID().toString().replace("-","")+UUID.randomUUID().toString().replace("-","");
-
     }
 
     public User login(String auth){

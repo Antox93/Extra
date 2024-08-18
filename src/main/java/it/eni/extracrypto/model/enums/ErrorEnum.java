@@ -4,7 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 public enum ErrorEnum {
-    NAME_ALREADY_USED("Nome già in uso", HttpStatus.BAD_REQUEST);
+    NAME_ALREADY_USED("Nome già in uso", HttpStatus.BAD_REQUEST),
+    AMOUNT_EXCEEDED("Non hai abbastanza fondi", HttpStatus.BAD_REQUEST);
 
     public final String message;
     public final HttpStatusCode statusCode;

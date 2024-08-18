@@ -16,6 +16,7 @@ public class CryptoWallet {
     private Long id;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private CryptoName cryptoName;
 
     @Column
@@ -25,5 +26,6 @@ public class CryptoWallet {
     private String walletAddress;
 
     @Column
+    @Enumerated(EnumType.STRING)
     private Network network;
 }

@@ -22,6 +22,9 @@ public class Transaction {
     private String walletAddressSender;
 
     @Column
+    private String walletAddressStarter;
+
+    @Column
     @Enumerated(EnumType.STRING)
     private Network network;
 
@@ -37,4 +40,6 @@ public class Transaction {
 
     @Column
     private BigDecimal fee;
+
+
 }
