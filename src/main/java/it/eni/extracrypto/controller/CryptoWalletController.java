@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("crypto-wallet")
-
-
 public class CryptoWalletController {
     private final CryptoWalletService cryptoWalletService;
+
 
     @Autowired
     public CryptoWalletController(CryptoWalletService cryptoWalletService){
@@ -28,5 +28,12 @@ public class CryptoWalletController {
     public ResponseEntity<List<CryptoDataDto>> searchCryptoData(@RequestParam String walletAddress,@RequestParam Network network){
       List<CryptoDataDto> cryptoDataDtos = cryptoWalletService.findCryptoData(walletAddress,network);
       return ResponseEntity.ok(cryptoDataDtos);
+
     }
+
+    @GetMapping("status")
+    public BigDecimal searchWalletStatus(@RequestParam String walletAddress,@RequestParam Network network){
+        return cryptoWalletService.findWalletStatus(walletAddress,network);
+    }
+
 }
