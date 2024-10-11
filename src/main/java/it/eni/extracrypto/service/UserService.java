@@ -2,10 +2,13 @@ package it.eni.extracrypto.service;
 
 import it.eni.extracrypto.exception.BusinessException;
 import it.eni.extracrypto.model.dto.CreateUserDto;
+import it.eni.extracrypto.model.dto.UserConfigDto;
 import it.eni.extracrypto.model.entity.User;
 import it.eni.extracrypto.model.entity.UserConfig;
 import it.eni.extracrypto.model.entity.Wallet;
+import it.eni.extracrypto.model.enums.CryptoName;
 import it.eni.extracrypto.model.enums.ErrorEnum;
+import it.eni.extracrypto.model.enums.Network;
 import it.eni.extracrypto.repository.UserConfigRepository;
 import it.eni.extracrypto.repository.UserRepository;
 import it.eni.extracrypto.repository.WalletRepository;
@@ -16,7 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 
 @Service
@@ -50,6 +55,7 @@ public class UserService {
         User userSaved= userRepository.save(user);
         UserConfig userConfig = new UserConfig();
         userConfig.setUserId(userSaved.getId());
+        userConfig.setFavouriteNetwork(Network.ETHEREUM);
         userConfigRepository.save(userConfig);
 
         Wallet wallet = new Wallet();
@@ -87,5 +93,44 @@ public class UserService {
 
     }
 
+    public UserConfigDto findUserConfig(Long userId){
+       UserConfig userConfig = userConfigRepository.findByUserId(userId);
+       UserConfigDto dto = new UserConfigDto();
+       dto.setFavouriteNetwork(userConfig.getFavouriteNetwork());
+       dto.setFavouriteCrypto(createFavouriteCrypto(userConfig.getFavouriteCrypto()));
+       return dto;
+    }
+
+    private List<CryptoName> createFavouriteCrypto(String favouriteCrypto) {
+        List<CryptoName> cryptoList = new ArrayList<>();
+        if(favouriteCrypto!= null) {
+            String[] cryptoArray = favouriteCrypto.split(";");
+            for (String s : cryptoArray) {
+                cryptoList.add(CryptoName.valueOf(s));
+            }
+        }
+        return cryptoList;
+    }
+
+    public void addFavouriteCrypto (Long userId, CryptoName crypto){
+      UserConfig find = userConfigRepository.findByUserId(userId);
+      String favouriteCrypto= crypto.toString()+";";
+      if(find.getFavouriteCrypto() == null){
+          find.setFavouriteCrypto(favouriteCrypto);
+
+      }else{
+          find.setFavouriteCrypto(find.getFavouriteCrypto()+favouriteCrypto);
+      }
+      userConfigRepository.save(find);
+    }
+
+    public void deleteFavouriteCrypto (Long userId, CryptoName crypto){
+        UserConfig find = userConfigRepository.findByUserId(userId);
+        if(find.getFavouriteCrypto() != null && find.getFavouriteCrypto().contains(crypto.toString())){
+            String replaced = find.getFavouriteCrypto().replace(crypto+";","");
+            find.setFavouriteCrypto(replaced);
+            userConfigRepository.save(find);
+        }
+    }
 
 }
