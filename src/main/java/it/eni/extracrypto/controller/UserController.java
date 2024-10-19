@@ -4,6 +4,7 @@ import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.dto.UserConfigDto;
 import it.eni.extracrypto.model.entity.User;
 import it.eni.extracrypto.model.enums.CryptoName;
+import it.eni.extracrypto.model.enums.Network;
 import it.eni.extracrypto.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,11 @@ public class UserController {
     @PatchMapping("/config/crypto/{userId}")
     public void addFavouriteCrypto (@PathVariable Long userId, @RequestParam CryptoName crypto){
         userService.addFavouriteCrypto(userId,crypto);
+    }
+
+    @PatchMapping("/config/network/{userId}")
+    public void updateFavouriteNetwork (@PathVariable Long userId, @RequestParam Network network){
+        userService.updateFavouriteNetwork(userId,network);
     }
 
     @DeleteMapping("/config/crypto/{userId}")

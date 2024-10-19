@@ -123,6 +123,13 @@ public class UserService {
       }
       userConfigRepository.save(find);
     }
+    public void updateFavouriteNetwork (Long userId, Network network){
+        UserConfig find = userConfigRepository.findByUserId(userId);
+        find.setFavouriteNetwork(network);
+
+
+        userConfigRepository.save(find);
+    }
 
     public void deleteFavouriteCrypto (Long userId, CryptoName crypto){
         UserConfig find = userConfigRepository.findByUserId(userId);
