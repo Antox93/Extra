@@ -2,6 +2,7 @@ package it.eni.extracrypto.controller;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +28,7 @@ public class EnumsController {
 
         RestTemplate restTemplate = new RestTemplate();
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(COINMARKETCAP_URL, entity, Map.class);
+            ResponseEntity<Map> response = restTemplate.exchange(COINMARKETCAP_URL, HttpMethod.GET, entity, Map.class);
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Errore durante la richiesta all'API di CoinMarketCap: " + e.getMessage());
