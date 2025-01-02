@@ -10,7 +10,14 @@ import java.math.BigDecimal;
 public class CryptoMarketDto {
     private CryptoMarketDataDto data;
 
-    public BigDecimal getPrice(){
-        return this.data.getCoin().getQuote().getValue().getPrice();
+    public BigDecimal getPrice(String id) {
+        var coin = this.data.getCoin().stream()
+                .filter(c-> id.equals(c.getId()))
+                .findFirst().orElse(null);
+
+        if (coin == null) return BigDecimal.ZERO;
+
+        return coin.getQuote().getValue().getPrice();
+
     }
 }

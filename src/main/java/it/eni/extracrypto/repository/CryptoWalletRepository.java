@@ -13,6 +13,8 @@ public interface CryptoWalletRepository extends JpaRepository<CryptoWallet,Long>
     Optional<CryptoWallet> findByWalletAddressAndNetworkAndCryptoName(String walletAddress, Network network, CryptoName cryptoName);
 
     List<CryptoWallet> findByWalletAddressAndNetwork(String walletAddress,Network network);
+
+    List<CryptoWallet> findByWalletAddress(String walletAddress);
 }
 
 

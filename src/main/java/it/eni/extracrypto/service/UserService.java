@@ -3,6 +3,7 @@ package it.eni.extracrypto.service;
 import it.eni.extracrypto.exception.BusinessException;
 import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.dto.UserConfigDto;
+import it.eni.extracrypto.model.dto.UserDto;
 import it.eni.extracrypto.model.entity.User;
 import it.eni.extracrypto.model.entity.UserConfig;
 import it.eni.extracrypto.model.entity.Wallet;
@@ -65,7 +66,7 @@ public class UserService {
         walletRepository.save(wallet);
     }
 
-    public User login(String auth){
+    public UserDto login(String auth){
         byte[] decodedAuth = Base64.getDecoder().decode(auth.replaceAll("Basic ", ""));
         String username = new String(decodedAuth, StandardCharsets.UTF_8).split(":")[0];
         String password =  new String(decodedAuth, StandardCharsets.UTF_8).split(":")[1];
@@ -79,7 +80,15 @@ public class UserService {
             byte[] hashedPasswordBytes = DigestUtils.sha256(salt + password);
             String hashedPassword = Base64.getEncoder().encodeToString(hashedPasswordBytes);
             if (hashedPassword.equals(hashedPasswordUser)){
-                return user;
+                Wallet wallet = walletRepository.findByUserId(user.getId());
+                UserDto userDto = new UserDto();
+                userDto.setUsername(user.getUsername());
+                userDto.setId(user.getId());
+                userDto.setAddressId(wallet.getId());
+
+
+                return userDto;
+
             }
         }
         return null;

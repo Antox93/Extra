@@ -2,7 +2,7 @@ package it.eni.extracrypto.controller;
 
 import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.dto.UserConfigDto;
-import it.eni.extracrypto.model.entity.User;
+import it.eni.extracrypto.model.dto.UserDto;
 import it.eni.extracrypto.model.enums.CryptoName;
 import it.eni.extracrypto.model.enums.Network;
 import it.eni.extracrypto.service.UserService;
@@ -33,8 +33,8 @@ public class UserController {
 
 
     @GetMapping("/login")
-    public ResponseEntity<User> login(@RequestHeader("Authorization") String auth){
-        User user= userService.login(auth);
+    public ResponseEntity<UserDto> login(@RequestHeader("Authorization") String auth){
+        UserDto user= userService.login(auth);
 
         if (user!= null){
             return ResponseEntity.ok(user);

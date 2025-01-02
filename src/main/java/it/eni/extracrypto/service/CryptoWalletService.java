@@ -48,6 +48,19 @@ public class CryptoWalletService {
         return cryptoList;
     }
 
+    public List<CryptoDataDto> findCryptoDataAll(String walletAddress){
+        List<CryptoWallet> cryptoWallets=cryptoWalletRepository.findByWalletAddress(walletAddress);
+        List<CryptoDataDto> cryptoList = new ArrayList<>();
+        for(CryptoWallet s : cryptoWallets){
+            CryptoDataDto cryptoDataDto = new CryptoDataDto();
+            cryptoDataDto.setCryptoAmount(s.getAmount());
+            cryptoDataDto.setCryptoName(s.getCryptoName());
+            cryptoDataDto.setDollarAmount(convert(s.getCryptoName(),s.getAmount()));
+            cryptoList.add(cryptoDataDto);
+        }
+        return cryptoList;
+    }
+
     public BigDecimal findWalletStatus(String walletAddress,Network network){
         List<CryptoWallet> cryptoWallets=cryptoWalletRepository.findByWalletAddressAndNetwork(walletAddress,network);
         BigDecimal somma= BigDecimal.ZERO;
@@ -67,7 +80,7 @@ public class CryptoWalletService {
         if(response.statusCode()==200){
             try {
                 CryptoMarketDto dto = new ObjectMapper().readValue(response.body(),CryptoMarketDto.class);
-                BigDecimal dollars = dto.getPrice();
+                BigDecimal dollars = dto.getPrice(cryptoName.id.toString());
                 return dollars.multiply(amount);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);

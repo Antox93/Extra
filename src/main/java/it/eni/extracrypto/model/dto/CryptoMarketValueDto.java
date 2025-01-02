@@ -16,4 +16,5 @@ public class CryptoMarketValueDto {
     private BigDecimal percent_change_60d;
     private BigDecimal percent_change_90d;
     private BigDecimal market_cap;
+    private BigDecimal volume_24h;
 }

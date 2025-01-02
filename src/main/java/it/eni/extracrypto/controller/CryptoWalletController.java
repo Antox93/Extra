@@ -30,6 +30,12 @@ public class CryptoWalletController {
       return ResponseEntity.ok(cryptoDataDtos);
 
     }
+    @GetMapping("all")
+    public ResponseEntity<List<CryptoDataDto>> searchCryptoDataAll(@RequestParam String walletAddress){
+        List<CryptoDataDto> cryptoDataDtos = cryptoWalletService.findCryptoDataAll(walletAddress);
+        return ResponseEntity.ok(cryptoDataDtos);
+
+    }
 
     @GetMapping("status")
     public BigDecimal searchWalletStatus(@RequestParam String walletAddress,@RequestParam Network network){
