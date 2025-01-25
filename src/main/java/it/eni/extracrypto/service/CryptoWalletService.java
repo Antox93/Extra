@@ -56,6 +56,7 @@ public class CryptoWalletService {
             cryptoDataDto.setCryptoAmount(s.getAmount());
             cryptoDataDto.setCryptoName(s.getCryptoName());
             cryptoDataDto.setDollarAmount(convert(s.getCryptoName(),s.getAmount()));
+            cryptoDataDto.setNetwork(s.getNetwork());
             cryptoList.add(cryptoDataDto);
         }
         return cryptoList;

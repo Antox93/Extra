@@ -4,9 +4,11 @@ import it.eni.extracrypto.exception.BusinessException;
 import it.eni.extracrypto.model.dto.CreateTransactionDto;
 import it.eni.extracrypto.model.entity.CryptoWallet;
 import it.eni.extracrypto.model.entity.Transaction;
+import it.eni.extracrypto.model.entity.Wallet;
 import it.eni.extracrypto.model.enums.ErrorEnum;
 import it.eni.extracrypto.repository.CryptoWalletRepository;
 import it.eni.extracrypto.repository.TransactionRepository;
+import it.eni.extracrypto.repository.WalletRepository;
 import it.eni.extracrypto.util.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +23,12 @@ import java.util.Optional;
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final CryptoWalletRepository cryptoWalletRepository;
+    private final WalletRepository walletRepository;
 
     @Autowired
-    public TransactionService(TransactionRepository transactionRepository, CryptoWalletRepository cryptoWalletRepository){
+    public TransactionService(TransactionRepository transactionRepository, CryptoWalletRepository cryptoWalletRepository, WalletRepository walletRepository){
 
+        this.walletRepository = walletRepository;
         this.transactionRepository = transactionRepository;
         this.cryptoWalletRepository = cryptoWalletRepository;
     }
@@ -37,11 +41,14 @@ public class TransactionService {
 
    @Transactional
     public void createTransaction  (CreateTransactionDto dto){
-        Transaction transactionRecipient = createEntity(dto);
-        transactionRecipient.setFee(BigDecimal.ZERO);
-        transactionRecipient.setWalletAddressStarter(dto.getWalletRecipient());
-        transactionRepository.save(transactionRecipient);
+        Optional<Wallet> walletOpt= walletRepository.findById(dto.getWalletRecipient());
 
+        if(walletOpt.isPresent()) {
+            Transaction transactionRecipient = createEntity(dto);
+            transactionRecipient.setFee(BigDecimal.ZERO);
+            transactionRecipient.setWalletAddressStarter(dto.getWalletRecipient());
+            transactionRepository.save(transactionRecipient);
+        }
        Transaction transactionSender =createEntity(dto);
        transactionSender.setFee(dto.getNetwork().fee);
        transactionSender.setAmount(dto.getAmount().negate());
@@ -62,21 +69,24 @@ public class TransactionService {
             cryptoWalletRepository.save(crypto);
 
         }
-       Optional<CryptoWallet> cryptoRecipientOpt=cryptoWalletRepository.findByWalletAddressAndNetworkAndCryptoName(dto.getWalletRecipient(),dto.getNetwork(),dto.getCryptoName());
-       if(cryptoRecipientOpt.isPresent()){
-           CryptoWallet crypto= cryptoRecipientOpt.get();
-           BigDecimal result= crypto.getAmount().add(transactionRecipient.getAmount());
-           crypto.setAmount(result);
-           cryptoWalletRepository.save(crypto);
-       }else{
-           CryptoWallet cryptoWallet = new CryptoWallet();
-           cryptoWallet.setCryptoName(dto.getCryptoName());
-           cryptoWallet.setNetwork(dto.getNetwork());
-           cryptoWallet.setWalletAddress(dto.getWalletRecipient());
-           cryptoWallet.setAmount(dto.getAmount());
-           cryptoWalletRepository.save(cryptoWallet);
 
-       }
+        if (walletOpt.isPresent()) {
+            Optional<CryptoWallet> cryptoRecipientOpt = cryptoWalletRepository.findByWalletAddressAndNetworkAndCryptoName(dto.getWalletRecipient(), dto.getNetwork(), dto.getCryptoName());
+            if (cryptoRecipientOpt.isPresent()) {
+                CryptoWallet crypto = cryptoRecipientOpt.get();
+                BigDecimal result = crypto.getAmount().add(dto.getAmount());
+                crypto.setAmount(result);
+                cryptoWalletRepository.save(crypto);
+            } else {
+                CryptoWallet cryptoWallet = new CryptoWallet();
+                cryptoWallet.setCryptoName(dto.getCryptoName());
+                cryptoWallet.setNetwork(dto.getNetwork());
+                cryptoWallet.setWalletAddress(dto.getWalletRecipient());
+                cryptoWallet.setAmount(dto.getAmount());
+                cryptoWalletRepository.save(cryptoWallet);
+
+            }
+        }
 
     }
     private static Transaction createEntity(CreateTransactionDto dto){

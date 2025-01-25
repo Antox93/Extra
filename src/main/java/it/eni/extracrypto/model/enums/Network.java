@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public enum Network {
     KASPA(BigDecimal.valueOf(0.001)),
-    BITCOIN(BigDecimal.valueOf(100)),
+    BITCOIN(BigDecimal.valueOf(0.0001)),
     SOLANA(BigDecimal.valueOf(0.01)),
     ETHEREUM(BigDecimal.valueOf(10)),
     DOGECOIN(BigDecimal.valueOf(0.1));
