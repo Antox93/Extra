@@ -26,8 +26,8 @@ public class EnumsController {
     private static final String API_KEY = "37a8a575-4e40-4841-af89-02f35d8ff82e";
     private static final String COINMARKETCAP_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
 
-    @GetMapping("/crypto/data")
-    public ResponseEntity<?> getCryptoData() {
+    @GetMapping("/crypto/data/all")
+    public ResponseEntity<?> getAllCryptoData() {
         // Headers per la chiamata
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-CMC_PRO_API_KEY", API_KEY);
@@ -43,8 +43,6 @@ public class EnumsController {
             ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
             String json = new ObjectMapper().writeValueAsString(response.getBody());
            CryptoMarketDto result = new ObjectMapper().readValue(json, CryptoMarketDto.class);
-
-
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {
@@ -79,5 +77,27 @@ public class EnumsController {
     public List<CryptoNetworkDto> getNetworks() {
        return Arrays.stream(Network.values()).map(n -> new CryptoNetworkDto(n.toString(),n.fee)).toList();
 
+    }
+
+    @GetMapping("/crypto/data")
+    public ResponseEntity<?> getCryptoData(String searchCrypto) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-CMC_PRO_API_KEY", API_KEY);
+
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            String url = COINMARKETCAP_URL + "?id=" +searchCrypto;
+
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            String json = new ObjectMapper().writeValueAsString(response.getBody());
+            CryptoMarketDto result = new ObjectMapper().readValue(json, CryptoMarketDto.class);
+
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Errore durante la richiesta all'API di CoinMarketCap: " + e.getMessage());
+        }
     }
 }

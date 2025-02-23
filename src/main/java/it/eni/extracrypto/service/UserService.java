@@ -21,8 +21,10 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -127,11 +129,24 @@ public class UserService {
       if(find.getFavouriteCrypto() == null){
           find.setFavouriteCrypto(favouriteCrypto);
 
-      }else{
+      }else if(!find.getFavouriteCrypto().contains(favouriteCrypto)){
           find.setFavouriteCrypto(find.getFavouriteCrypto()+favouriteCrypto);
       }
       userConfigRepository.save(find);
     }
+
+    public List<Integer> getFavouriteCrypto(Long userId){
+        UserConfig find = userConfigRepository.findByUserId(userId);
+
+        if (find != null && find.getFavouriteCrypto() != null) {
+            return Arrays.stream(find.getFavouriteCrypto().split(";"))
+                    .map(CryptoName::valueOf)
+                    .map(CryptoName::getId)
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
     public void updateFavouriteNetwork (Long userId, Network network){
         UserConfig find = userConfigRepository.findByUserId(userId);
         find.setFavouriteNetwork(network);

@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping ("user")
 
@@ -26,7 +28,6 @@ public class UserController {
     }
 
     @PostMapping()
-
     public void createUser (@Valid @RequestBody CreateUserDto request){
         userService.createUser(request);
     }
@@ -50,19 +51,26 @@ public class UserController {
 
     }
 
-    @PatchMapping("/config/crypto/{userId}")
-    public void addFavouriteCrypto (@PathVariable Long userId, @RequestParam CryptoName crypto){
-        userService.addFavouriteCrypto(userId,crypto);
-    }
+
 
     @PatchMapping("/config/network/{userId}")
     public void updateFavouriteNetwork (@PathVariable Long userId, @RequestParam Network network){
         userService.updateFavouriteNetwork(userId,network);
     }
 
-    @DeleteMapping("/config/crypto/{userId}")
+    @PostMapping("/{userId}/favourite-crypto")
+    public void addFavouriteCrypto (@PathVariable Long userId, @RequestParam CryptoName crypto){
+        userService.addFavouriteCrypto(userId,crypto);
+    }
+
+    @GetMapping("/{userId}/favourite-crypto")
+    public ResponseEntity<List<Integer>> getFavouriteCrypto(@PathVariable Long userId){
+        List<Integer> favouriteCrypto = userService.getFavouriteCrypto(userId);
+        return ResponseEntity.ok(favouriteCrypto);
+    }
+
+    @DeleteMapping ("/{userId}/favourite-crypto")
     public void deleteFavouriteCrypto(@PathVariable Long userId, @RequestParam CryptoName crypto){
         userService.deleteFavouriteCrypto(userId,crypto);
-
     }
 }
