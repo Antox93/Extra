@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -123,8 +120,9 @@ public class UserService {
         return cryptoList;
     }
 
-    public void addFavouriteCrypto (Long userId, CryptoName crypto){
+    public void addFavouriteCrypto (Long userId, Integer cryptoId){
       UserConfig find = userConfigRepository.findByUserId(userId);
+      CryptoName crypto = CryptoName.getName(cryptoId);
       String favouriteCrypto= crypto.toString()+";";
       if(find.getFavouriteCrypto() == null){
           find.setFavouriteCrypto(favouriteCrypto);
@@ -155,13 +153,58 @@ public class UserService {
         userConfigRepository.save(find);
     }
 
-    public void deleteFavouriteCrypto (Long userId, CryptoName crypto){
+    public void deleteFavouriteCrypto (Long userId, Integer cryptoId){
         UserConfig find = userConfigRepository.findByUserId(userId);
+        CryptoName crypto = CryptoName.getName(cryptoId);
         if(find.getFavouriteCrypto() != null && find.getFavouriteCrypto().contains(crypto.toString())){
             String replaced = find.getFavouriteCrypto().replace(crypto+";","");
             find.setFavouriteCrypto(replaced);
             userConfigRepository.save(find);
         }
+    }
+    public void changePassword(String auth,Long userId){
+        byte[] decodedAuth = Base64.getDecoder().decode(auth.replaceAll("Basic ", ""));
+        String newPassword= new String(decodedAuth, StandardCharsets.UTF_8).split(":")[0];
+        String oldPassword =  new String(decodedAuth, StandardCharsets.UTF_8).split(":")[1];
+
+        Optional <User> userOpt = userRepository.findById(userId);
+        if(userOpt.isPresent()){
+            var user = userOpt.get();
+            String salt = user.getPassword().split(":")[0];
+            String hashedPasswordUser = user.getPassword().split(":")[1];
+
+            byte[] hashedPasswordBytes = DigestUtils.sha256(salt + oldPassword);
+            String hashedPassword = Base64.getEncoder().encodeToString(hashedPasswordBytes);
+            if (hashedPassword.equals(hashedPasswordUser)){
+                user.setPassword(generatePassword(newPassword));
+                userRepository.save(user);
+
+            }
+        }
+
+
+    }
+    public void changeUsername(String auth,Long userId){
+        byte[] decodedAuth = Base64.getDecoder().decode(auth.replaceAll("Basic ", ""));
+        String newUsername= new String(decodedAuth, StandardCharsets.UTF_8).split(":")[0];
+        String oldPassword =  new String(decodedAuth, StandardCharsets.UTF_8).split(":")[1];
+
+        Optional <User> userOpt = userRepository.findById(userId);
+        if(userOpt.isPresent()){
+            var user = userOpt.get();
+            String salt = user.getPassword().split(":")[0];
+            String hashedPasswordUser = user.getPassword().split(":")[1];
+
+            byte[] hashedPasswordBytes = DigestUtils.sha256(salt + oldPassword);
+            String hashedPassword = Base64.getEncoder().encodeToString(hashedPasswordBytes);
+            if (hashedPassword.equals(hashedPasswordUser)){
+                user.setUsername(newUsername);
+                userRepository.save(user);
+
+            }
+        }
+
+
     }
 
 }

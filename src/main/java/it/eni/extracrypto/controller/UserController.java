@@ -3,7 +3,6 @@ package it.eni.extracrypto.controller;
 import it.eni.extracrypto.model.dto.CreateUserDto;
 import it.eni.extracrypto.model.dto.UserConfigDto;
 import it.eni.extracrypto.model.dto.UserDto;
-import it.eni.extracrypto.model.enums.CryptoName;
 import it.eni.extracrypto.model.enums.Network;
 import it.eni.extracrypto.service.UserService;
 import jakarta.validation.Valid;
@@ -59,8 +58,8 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/favourite-crypto")
-    public void addFavouriteCrypto (@PathVariable Long userId, @RequestParam CryptoName crypto){
-        userService.addFavouriteCrypto(userId,crypto);
+    public void addFavouriteCrypto (@PathVariable Long userId, @RequestParam Integer cryptoId){
+        userService.addFavouriteCrypto(userId,cryptoId);
     }
 
     @GetMapping("/{userId}/favourite-crypto")
@@ -70,7 +69,17 @@ public class UserController {
     }
 
     @DeleteMapping ("/{userId}/favourite-crypto")
-    public void deleteFavouriteCrypto(@PathVariable Long userId, @RequestParam CryptoName crypto){
-        userService.deleteFavouriteCrypto(userId,crypto);
+    public void deleteFavouriteCrypto(@PathVariable Long userId, @RequestParam Integer cryptoId){
+        userService.deleteFavouriteCrypto(userId,cryptoId);
     }
+    @GetMapping ("/{userId}/change-password")
+    public void changePassword(@RequestHeader("Authorization") String auth,@PathVariable Long userId){
+        userService.changePassword(auth,userId);
+    }
+    @GetMapping ("/{userId}/change-username")
+    public void changeUsername(@RequestHeader("Authorization") String auth,@PathVariable Long userId){
+        userService.changeUsername(auth,userId);
+    }
+
+
 }

@@ -17,4 +17,13 @@ public enum CryptoName {
     public Integer getId() {
         return id;
     }
+
+    public static CryptoName getName(Integer id) {
+        for (CryptoName cryptoName : CryptoName.values()) {
+            if (cryptoName.getId().equals(id)) {
+                return cryptoName;
+            }
+        }
+        return CryptoName.BITCOIN;
+    }
 }
