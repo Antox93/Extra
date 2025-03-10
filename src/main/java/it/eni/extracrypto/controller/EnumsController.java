@@ -23,6 +23,11 @@ public class EnumsController {
     private static final String API_KEY = "37a8a575-4e40-4841-af89-02f35d8ff82e";
     private static final String COINMARKETCAP_URL = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest";
 
+
+
+
+
+
     @GetMapping("/crypto/data/all")
     public ResponseEntity<?> getAllCryptoData() {
         // Headers per la chiamata
@@ -97,4 +102,32 @@ public class EnumsController {
             return ResponseEntity.status(500).body("Errore durante la richiesta all'API di CoinMarketCap: " + e.getMessage());
         }
     }
+
+
+    @GetMapping("/crypto/history/{slug}")
+    public ResponseEntity<?> getCryptoHistoricalData(@PathVariable("slug") String slug) {
+        if (slug == null || slug.isEmpty()) {
+            return ResponseEntity.status(400).body("Errore: il parametro slug è mancante.");
+        }
+
+        String apiKey = "CG-oaG2WmpByRhut8sHUQEo6knh";
+        String url = "https://api.coingecko.com/api/v3/coins/" + slug +
+                "/market_chart?vs_currency=usd&days=2&x_cg_demo_api_key=" + apiKey;
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, null, Map.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Errore nel recupero dati da CoinGecko: " + e.getMessage());
+        }
+    }
+
+
+
+
+
 }
+
+
+
